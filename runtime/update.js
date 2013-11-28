@@ -1,6 +1,8 @@
-define(["shared"],
-    function (shared) {
+define(function (require) {
         "use strict";
+
+        var shared = require("shared");
+
         var onUpdate = function (details) {
             if (details.reason !== "update") {
                 return;

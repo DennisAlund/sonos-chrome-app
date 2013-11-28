@@ -1,4 +1,9 @@
-define(["./install", "./update", "./launched", "./suspend"],
-    function () {
+define(function (require) {
         "use strict";
-});
+
+        require("./install");
+        require("./update");
+        require("./launched");
+        require("./suspend");
+    }
+);

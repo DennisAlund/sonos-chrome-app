@@ -1,6 +1,8 @@
-define(["shared"],
-    function (shared) {
+define(function (require) {
         "use strict";
+
+        var shared = require("shared");
+
         var onSuspend = function () {
             shared.util.debugLog("chrome.runtime.onSuspend");
         };

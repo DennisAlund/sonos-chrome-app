@@ -1,34 +1,35 @@
 require(["config"], function (config) {
 
+    "use strict";
 
-    requirejs.config(config);
-    requirejs.config({
+    require.config(config);
+    require.config({
         baseUrl: "../",
         paths: {
             bootstrap: "lib/bootstrap/dist/js/bootstrap.min",
-            jquery: "lib/jquery/jquery.min",
             domReady: "lib/requirejs-domready/domReady",
-            angular: "lib/angular/angular"
+            angular: "lib/angular/angular",
+            angularBootstrap: "lib/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min"
         },
         packages: [
-            "angular_app",
-            "angular_app/controllers",
-            "angular_app/directives",
-            "angular_app/filters",
-            "angular_app/services"
+            "ui",
+            "ui/controllers",
+            "ui/directives",
+            "ui/filters",
+            "ui/services"
         ],
         shim: {
-            angular : {exports : "angular"},
-            bootstrap: { deps: ["jquery"], exports: "jQuery" }
+            angular: {exports: "angular"},
+            angularBootstrap: { deps: ["angular"]}
         },
         enforceDefine: false
     });
 
-    require(["require", "shared/definitions"], function(require, definitions){
+    require(["require", "shared/definitions"], function (require, definitions) {
         // Set up definitions
         definitions.NG_APP_ID = "app";
 
         // Get the app up
-        require(["angular_app"]);
+        require(["ui"]);
     });
 });
