@@ -8,7 +8,7 @@
         "background": {
             "scripts": [
                 "lib/requirejs/require.js",
-                "bootstrap.runtime.js"]
+                "background.js"]
         }
     },
     "minimum_chrome_version": "30",

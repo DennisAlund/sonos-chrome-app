@@ -25,11 +25,5 @@ require(["config"], function (config) {
         enforceDefine: false
     });
 
-    require(["require", "shared/definitions"], function (require, definitions) {
-        // Set up definitions
-        definitions.NG_APP_ID = "app";
-
-        // Get the app up
-        require(["ui"]);
-    });
+    require("ui");
 });
