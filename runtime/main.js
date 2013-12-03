@@ -5,5 +5,6 @@ define(function (require) {
         require("./update");
         require("./launched");
         require("./suspend");
+        require("./message");
     }
 );

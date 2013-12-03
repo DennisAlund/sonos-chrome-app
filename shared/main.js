@@ -3,6 +3,7 @@ define(function (require) {
 
         return {
             util: require("./util"),
+            messaging: require("./messaging"),
             definitions: require("./definitions")
         };
     }

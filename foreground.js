@@ -25,5 +25,7 @@ require(["config"], function (config) {
         enforceDefine: false
     });
 
-    require("ui");
+    require(["require"], function (require) {
+        require(["ui"]);
+    });
 });

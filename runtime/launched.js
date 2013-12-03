@@ -16,6 +16,13 @@ define(function (require) {
                 minWidth: shared.definitions.MIN_WIN_WIDTH,
                 minHeight: shared.definitions.MIN_WIN_HEIGHT
             });
+            chrome.storage.local.set({devices: []});
+            setTimeout(function () {
+                console.log("Now writing to local storage.");
+                chrome.storage.local.set({devices: [
+                    {room: "test"}
+                ]});
+            }, 5000);
         }
 
         chrome.app.runtime.onLaunched.addListener(onLaunched);

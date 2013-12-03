@@ -1,14 +1,25 @@
-define(function () {
+define(function (require) {
         "use strict";
 
-        function roomListController($scope) {
+        var app = require("ui/app");
+
+        function roomListController($scope, deviceFactory) {
+
+            function createRoomList() {
+                return deviceFactory.getDevices().map(function (device) {
+                    return { name: device.room };
+                });
+            }
+
+            deviceFactory.onUpdate(function () {
+                $scope.rooms = createRoomList();
+                $scope.$apply();
+            });
+
+            $scope.rooms = createRoomList();
             $scope.groupButtonText = chrome.i18n.getMessage("deviceListGroupButton");
-            $scope.rooms = [
-                {"name": "Kitchen"},
-                {"name": "Living room"}
-            ];
         }
 
-        return roomListController;
+        app.controller("roomListController", ["$scope", "deviceFactory", roomListController]);
     }
 );

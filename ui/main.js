@@ -10,11 +10,12 @@ define(function (require) {
 
     shared.util.appLog("Loading main.js");
     require(["domReady!"], function (document) {
-        var app = require("ui/app");
-
-        var ng = require("angular");
-
         shared.util.appLog("The DOM is ready");
+
+        require("./controllers");
+        require("./services");
+        var ng = require("angular");
+        var app = require("ui/app");
 
         ng.bootstrap(document, [app.name]);
 

@@ -25,13 +25,6 @@ define([], function () {
             return that;
         };
 
-        // Default action types, can be extended by other modules
-        message.actionType = {
-            UNKNOWN: "__UNKNOWN__",
-            STORAGE: "chrome.storage.sync",
-            STORAGE_GET: "chrome.storage.sync.get",
-            STORAGE_SET: "chrome.storage.sync.set"
-        };
 
         return message;
     }

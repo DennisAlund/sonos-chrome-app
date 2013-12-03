@@ -13,7 +13,9 @@ define(function () {
             APP_WINDOW: "main.html",
 
             // Chrome storage keys
-            STORAGE_KEY_SETTINGS: "applicationSettings"
+            storage: {
+                devices: "sonos.devices"
+            }
         };
     }
 );
