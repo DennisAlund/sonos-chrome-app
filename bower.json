@@ -17,7 +17,6 @@
     "dependencies": {
         "sugar": "latest",
         "angular": "latest",
-        "bootstrap-css": "2.3",
         "angular-ui-bootstrap-bower": "latest",
         "requirejs-domready": "latest"
     },
