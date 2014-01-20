@@ -15,7 +15,6 @@ require(["config"], function (config) {
             "ui",
             "ui/controllers",
             "ui/directives",
-            "ui/filters",
             "ui/services"
         ],
         shim: {
@@ -25,7 +24,5 @@ require(["config"], function (config) {
         enforceDefine: false
     });
 
-    require(["require"], function (require) {
-        require(["ui"]);
-    });
+    require(["ui"]);
 });

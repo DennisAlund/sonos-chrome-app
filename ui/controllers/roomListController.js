@@ -2,24 +2,33 @@ define(function (require) {
         "use strict";
 
         var app = require("ui/app");
+        var services = require("ui/services");
+        var signals = require("ui/shared/signals");
 
-        function roomListController($scope, deviceFactory) {
+        function roomListController($scope, deviceService) {
 
-            function createRoomList() {
-                return deviceFactory.getDevices().map(function (device) {
-                    return { name: device.room };
-                });
+            function onDevicesUpdate() {
+                $scope.$apply();
             }
 
-            deviceFactory.onUpdate(function () {
-                $scope.rooms = createRoomList();
-                $scope.$apply();
-            });
+            deviceService.onUpdate(onDevicesUpdate);
+            //deviceService.subscribeToUpdate($scope);
+            $scope.mediaGroups = deviceService.getMediaGroups();
+            $scope.label = {
+                groupButtonText: chrome.i18n.getMessage("deviceListGroupButton")
+            };
 
-            $scope.rooms = createRoomList();
-            $scope.groupButtonText = chrome.i18n.getMessage("deviceListGroupButton");
+            $scope.selectMediaGroup = function (mediaGroupName) {
+                console.debug("Selected media group: %s", mediaGroupName);
+                //deviceService.setActiveMediaGroup(mediaGroupName);
+                $scope.$emit(signals.mediaGroupSelected, mediaGroupName);
+            };
         }
 
-        app.controller("roomListController", ["$scope", "deviceFactory", roomListController]);
+        roomListController.getId = function () {
+            return "roomListController";
+        };
+
+        app.controller(roomListController.getId(), ["$scope", services.deviceServiceId, roomListController]);
     }
 );

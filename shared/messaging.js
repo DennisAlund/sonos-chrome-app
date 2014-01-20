@@ -1,13 +1,32 @@
 define(function (require) {
     "use strict";
 
-
+    var definitions = require("shared/definitions");
     var actionType = {
-        STORAGE: "chrome.storage.sync",
-        STORAGE_GET: "chrome.storage.sync.get",
-        STORAGE_SET: "chrome.storage.sync.set",
-        DEVICES_GET: "sonos.devices.get"
+        DEVICES: "sonos.devices"
     };
+
+
+    function addListenerFor(action, callback) {
+
+        var onMessage = function onMessage(message, sender) {
+            if (!sender || (sender.id !== definitions.app.chromeId)) {
+                console.debug("Not interested in messages from app id '%s'", sender);
+                return;
+            }
+
+            if (!message.action) {
+                console.warn("Message did not contain an action!");
+                return;
+            }
+
+            if (message.action === action) {
+                callback(message.payload);
+            }
+        };
+
+        chrome.runtime.onMessage.addListener(onMessage);
+    }
 
     /**
      * Wrapper for chrome messaging.
@@ -20,18 +39,25 @@ define(function (require) {
         var message = {action: action};
         var onSuccessCallback;
 
+        console.debug("Sending message '%s'", action);
+
         if (typeof(payload) === "object") {
             message.payload = payload;
         }
         else if (typeof(payload) === "function") {
+            // Message has no payload, only callback
             onSuccessCallback = payload;
         }
+        else {
+            onSuccessCallback = callback;
+        }
 
-        chrome.runtime.sendMessage(message, onSuccessCallback || callback);
+        chrome.runtime.sendMessage(message, onSuccessCallback || function () {});
     }
 
     return {
-        actionType: actionType,
-        send: sendMessage
+        action: actionType,
+        sendMessage: sendMessage,
+        addListenerFor: addListenerFor
     };
 });

@@ -1,5 +1,9 @@
 define(function (require) {
     "use strict";
 
-    require("./deviceFactory");
+    var deviceService = require("./deviceService");
+
+    return {
+        deviceServiceId: deviceService.getId()
+    };
 });

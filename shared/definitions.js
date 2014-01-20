@@ -2,19 +2,20 @@ define(function () {
         "use strict";
 
         return {
-            APP_ID: chrome.i18n.getMessage("@@extension_id"),
-            APP_VERSION: chrome.runtime.getManifest().version,
+            app: {
+                chromeId: chrome.i18n.getMessage("@@extension_id"),
+                version: chrome.runtime.getManifest().version
+            },
 
-            // Application window
-            MIN_WIN_WIDTH: 1100,
-            DEFAULT_WIN_WIDTH: 1100,
-            MIN_WIN_HEIGHT: 700,
-            DEFAULT_WIN_HEIGHT: 700,
-            APP_WINDOW: "main.html",
-
-            // Chrome storage keys
-            storage: {
-                devices: "sonos.devices"
+            window: {
+                id: "app-main-window",
+                url: "/ui/main.html",
+                size: {
+                    minWidth: 1100,
+                    minHeight: 700,
+                    defaultWidth: 1100,
+                    defaultHeight: 700
+                }
             }
         };
     }

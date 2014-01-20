@@ -3,8 +3,8 @@ require(["config"], function (config) {
 
     require.config(config);
     require.config({
-        packages: ["runtime"]
+        packages: ["background"]
     });
 
-    require(["runtime"]);
+    require(["background"]);
 });

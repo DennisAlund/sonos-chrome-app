@@ -1,10 +1,11 @@
 define(function (require) {
         "use strict";
 
-        var shared = require("shared");
+        var definitions = require("shared/definitions");
+        var messaging = require("shared/messaging");
 
         function onMessage(message, sender, callback) {
-            if (!sender || (sender.id !== shared.definitions.APP_ID)) {
+            if (!sender || (sender.id !== definitions.app.chromeId)) {
                 console.debug("Not interested in messages from app id '%s'", sender);
                 return;
             }
@@ -15,7 +16,7 @@ define(function (require) {
             }
 
             console.debug("Dispatching message %s", message.action);
-            if (message.action === shared.messaging.actionType.DEVICES_GET) {
+            if (message.action === messaging.actionType.DEVICES_GET) {
                 callback([
                     {getRoom: function () {return "Kitchen"; }},
                     {getRoom: function () {return "Living room"; }}
