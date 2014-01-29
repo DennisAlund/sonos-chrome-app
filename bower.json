@@ -17,6 +17,7 @@
     "dependencies": {
         "sugar": "latest",
         "angular": "latest",
+        "angular-slider": "latest",
         "angular-ui-utils": "latest",
         "angular-ui-bootstrap-bower": "latest",
         "requirejs-domready": "latest"

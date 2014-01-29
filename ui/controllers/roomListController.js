@@ -6,23 +6,29 @@ define(function (require) {
         var signals = require("ui/shared/signals");
 
         function roomListController($scope, deviceService) {
-
-            function onDevicesUpdate() {
-                $scope.$apply();
-            }
-
-            deviceService.onUpdate(onDevicesUpdate);
-            //deviceService.subscribeToUpdate($scope);
-            $scope.mediaGroups = deviceService.getMediaGroups();
             $scope.label = {
                 groupButtonText: chrome.i18n.getMessage("deviceListGroupButton")
             };
 
-            $scope.selectMediaGroup = function (mediaGroupName) {
-                console.debug("Selected media group: %s", mediaGroupName);
-                //deviceService.setActiveMediaGroup(mediaGroupName);
-                $scope.$emit(signals.mediaGroupSelected, mediaGroupName);
+            $scope.selectMediaGroup = function (mediaGroup) {
+                console.debug("Selected media group: %s", mediaGroup.name);
+                $scope.$emit(signals.mediaGroupSelected, mediaGroup);
             };
+
+            function setServiceData(scope) {
+                scope.mediaGroups = deviceService.getMediaGroups();
+            }
+
+            function onDevicesUpdate() {
+                $scope.$apply(function (scope) {
+                    setServiceData(scope);
+                });
+            }
+
+            (function init() {
+                setServiceData($scope);
+                deviceService.onUpdate(onDevicesUpdate);
+            }());
         }
 
         roomListController.getId = function () {

@@ -4,21 +4,17 @@
     <meta charset="utf-8"/>
     <title>SONOS:APP</title>
     <link rel="stylesheet" media="all" href="/ui/css/bootstrap.dark.min.css">
+    <link rel="stylesheet" media="all" href="/lib/angular-slider/angular-slider.min.css">
     <!-- <base target="_blank"> -->
 </head>
 <body class="hide">
 <div class="container ng-cloak">
     <div class="row" style="margin-top: 15px;">
         <div class="span3">
-            <div class="btn-toolbar row text-center">
-                <div class="btn-group">
-                    <a class="btn" href="#"><i class="icon-white icon-volume-off"></i></a>
-                    <a class="btn" href="#"><i class="icon-white icon-volume-down"></i></a>
-                    <a class="btn" href="#"><i class="icon-white icon-volume-up"></i></a>
-                </div>
-            </div>
-            <div class="row text-center" style="padding-top: 20px;">
-                <b style="font-size: 50px">65%</b>
+            <div class="row">
+                <h4>Volume</h4>
+                <!-- ng-model="device.volume" -->
+                <slider floor="0" ceiling="100" step="1" precision="1"></slider>
             </div>
         </div>
         <div class="span6">
@@ -62,7 +58,7 @@
     <hr>
     <div class="row">
         <div class="span3" data-ng-controller="roomListController">
-            <div ng-click="selectMediaGroup(mediaGroup.name)" class="row-fluid" style="margin-top: 25px" data-ng-repeat="mediaGroup in mediaGroups">
+            <div ng-click="selectMediaGroup(mediaGroup)" class="row-fluid" style="margin-top: 25px" data-ng-repeat="mediaGroup in mediaGroups">
                 <div class="span2">
                     <img src="/ui/img/placeholder-100x100.gif">
                 </div>
@@ -76,14 +72,12 @@
 
             <div class="row-fluid">
                 <div class="span4">
-                    <img src="/ui/img/placeholder-100x100.gif">
+                    <img data-ng-src="{{mediaArtUrl}}">
                 </div>
                 <div class="span8">
-                    <dl>
-                        <dt>Station</dt>
-                        <dd>All hits station</dd>
-                        <dt>On Now</dt>
-                        <dd>Some song...</dd>
+                    <dl data-ng-repeat="description in metaData.descriptions">
+                        <dt>{{ description.header }}</dt>
+                        <dd>{{ description.description }}</dd>
                     </dl>
                 </div>
             </div>

@@ -16,6 +16,10 @@ define(function () {
                     defaultWidth: 1100,
                     defaultHeight: 700
                 }
+            },
+
+            storage: {
+                deviceLocations: "knownDeviceLocations"
             }
         };
     }

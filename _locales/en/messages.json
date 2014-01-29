@@ -18,5 +18,17 @@
     "deviceListGroupButton": {
         "message": "Group",
         "description": "Text on the group button in the UI device list."
+    },
+    "musicTrack": {
+        "message": "Track",
+        "description": "Music track."
+    },
+    "musicAlbum": {
+        "message": "Album",
+        "description": "Music album"
+    },
+    "musicArtist": {
+        "message": "Artist",
+        "description": "Music artist"
     }
 }

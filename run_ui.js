@@ -9,7 +9,8 @@ require(["config"], function (config) {
             bootstrap: "lib/bootstrap/dist/js/bootstrap.min",
             domReady: "lib/requirejs-domready/domReady",
             angular: "lib/angular/angular",
-            angularBootstrap: "lib/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min"
+            angularBootstrap: "lib/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min",
+            angularSlider: "lib/angular-slider/angular-slider.min"
         },
         packages: [
             "ui",
@@ -19,7 +20,8 @@ require(["config"], function (config) {
         ],
         shim: {
             angular: {exports: "angular"},
-            angularBootstrap: { deps: ["angular"]}
+            angularBootstrap: { deps: ["angular"]},
+            angularSlider: { deps: ["angular"]}
         },
         enforceDefine: false
     });

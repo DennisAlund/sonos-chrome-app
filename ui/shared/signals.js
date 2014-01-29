@@ -2,7 +2,8 @@ define(function () {
         "use strict";
 
         return {
-            mediaGroupSelected: "mediaGroupSelected"
+            mediaGroupSelected: "mediaGroupSelected",
+            mediaArt: "mediaArt"
         };
     }
 );

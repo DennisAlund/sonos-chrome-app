@@ -7,6 +7,20 @@ define(function (require) {
 
 
         /**
+         *
+         * TODO:
+         * Stop the flickering
+         *   - Make sure that there is actually a difference in the new data
+         *   - Maybe implement a lazy update that waits for a second of quietness before updating
+         *
+         *
+         * Clicking a room in the list
+         *  - Emit the change of room through the system and update a playerStateService
+         *    http://docs.angularjs.org/guide/scope
+         *
+         * */
+
+        /**
          * The deviceService implements methods for retrieving list of devices and getting or setting state of them
          *
          * @returns {object} Device Factory
@@ -18,52 +32,39 @@ define(function (require) {
             var mediaGroups = [];
 
             that.getDevices = function () {
-                return devices;
+                return devices.slice();
             };
 
             that.getMediaGroups = function () {
-                return mediaGroups;
+                return mediaGroups.slice();
             };
 
+            /**
+             * Get a representative device for a specified media group
+             *
+             * @param {object}  mediaGroup  Media group object
+             * @returns {object} A device
+             */
             that.getDeviceForMediaGroup = function (mediaGroup) {
-                var activeDevice = null;
-                devices.forEach(function (device) {
-                    if (device.room.name === mediaGroup) {
-                        activeDevice = device;
-                    }
+                var devicesInGroup = devices.filter(function (device) {
+                    return device.room.name === mediaGroup.name;
                 });
-                return activeDevice;
+
+                return devicesInGroup.length > 0 ? devicesInGroup[0] : null;
             };
 
             function onDevices(deviceData) {
-
-                /**
-                 *
-                 * TODO:
-                 * Stop the flickering
-                 *   - Make sure that there is actually a difference in the new data
-                 *   - Maybe implement a lazy update that waits for a second of quietness before updating
-                 *
-                 *
-                 * Clicking a room in the list
-                 *  - Emit the change of room through the system and update a playerStateService
-                 *    http://docs.angularjs.org/guide/scope
-                 *
-                 * */
                 console.debug("Got device info.", deviceData);
-                devices.splice(0, devices.length);
-                for (var deviceId in deviceData) {
-                    if (deviceData.hasOwnProperty(deviceId)) {
-                        devices.push(deviceData[deviceId]);
-                    }
-                }
+                deviceData = deviceData || [];
+                devices = deviceData.slice();
 
-                mediaGroups.splice(0, mediaGroups.length);
-                var roomMap = {};
-                devices.forEach(function (device) {
-                    if (!roomMap.hasOwnProperty(device.room.name) && device.speakerSize > 0) {
+                var mediaGroupMap = {};
+                mediaGroups = [];
+                deviceData.forEach(function (device) {
+                    // Create a unique list of media groups (aka rooms)
+                    if (!mediaGroupMap.hasOwnProperty(device.room.name) && device.speakerSize > 0) {
                         mediaGroups.push(device.room);
-                        roomMap[device.room.name] = true;
+                        mediaGroupMap[device.room.name] = true;
                     }
                 });
 
@@ -76,6 +77,8 @@ define(function (require) {
             (function init() {
                 console.debug("Initiating deviceService");
                 messaging.addListenerFor(messaging.action.DEVICES, onDevices);
+                // The device service might be loaded and initialized *after* device broadcast
+                messaging.sendMessage(messaging.action.REQUEST_DEVICES, onDevices);
             }());
 
             return that;
