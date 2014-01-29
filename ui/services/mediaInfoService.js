@@ -19,8 +19,15 @@ define(function (require) {
             var mediaInfo = {};
             var activeDevice = {};
 
+            var IMAGE_URL_DEFAULT = "/ui/img/default_media_art.png";
+            var IMAGE_URL_LOADING = "/ui/img/loading.gif";
+
             that.getMediaInfo = function () {
                 return mediaInfo;
+            };
+
+            that.getDefaultImageUrl = function () {
+                return IMAGE_URL_DEFAULT;
             };
 
             that.setActiveDevice = function (device) {
@@ -35,39 +42,38 @@ define(function (require) {
                 var mediaArtUri = mediaInfoData.metaData.albumArtUri || null;
                 var deviceAddress = activeDevice.address;
                 if (mediaArtUri && deviceAddress) {
-                    setArt("loading");
+                    setMediaArtUrl(IMAGE_URL_LOADING);
                     fetchImage(["http://", deviceAddress, mediaArtUri].join(""));
                 }
                 else {
-                    setArt("default");
+                    setMediaArtUrl(IMAGE_URL_DEFAULT);
                 }
 
                 that.refresh();
             }
 
+            /**
+             * Due to CSP restrictions in Chrome apps, it is not possible to just set img src to an external url.
+             * So we need to make an XHR to fetch image data, store the data locally and create a local URL to the image
+             * blob that will be added to the application resources temporarily with an URL similar to:
+             *
+             *      blob:chrome-extension%3A//madmeihladfgcdchipmbnngnlpbpfppp/89d758b6-e1dd-4f85-83b2-030d0757dcbf
+             *
+             * @param imageUrl
+             */
             function fetchImage(imageUrl) {
                 var httpRequest = $http({method: "GET", url: imageUrl, responseType: "blob"});
                 httpRequest.success(function (data) {
                     var urlCreator = webkitURL || URL;
-                    setArt(urlCreator.createObjectURL(data));
+                    setMediaArtUrl(urlCreator.createObjectURL(data));
                 });
                 httpRequest.error(function () {
-                    setArt("default");
+                    setMediaArtUrl(IMAGE_URL_DEFAULT);
                 });
             }
 
-            function setArt(art) {
-                var artUrl = "";
-                if (art === "default") {
-                    artUrl = "/ui/img/default_media_art.png";
-                }
-                else if (art === "loading") {
-                    artUrl = "/ui/img/loading.gif";
-                }
-                else {
-                    artUrl = art;
-                }
-                $rootScope.$broadcast(signals.mediaArt, artUrl);
+            function setMediaArtUrl(url) {
+                $rootScope.$broadcast(signals.mediaArt, url);
             }
 
             /**

@@ -9,14 +9,17 @@ define(function (require) {
         /**
          *
          * TODO:
-         * Stop the flickering
-         *   - Make sure that there is actually a difference in the new data
-         *   - Maybe implement a lazy update that waits for a second of quietness before updating
+         * It seems like devices are sometimes disappearing briefly. It is probably because the way of SonosJS is updating devices
+         * by first removing them and then adding them if they are still answering. Maybe there is a event triggered when the device
+         * is not present.
          *
-         *
-         * Clicking a room in the list
-         *  - Emit the change of room through the system and update a playerStateService
-         *    http://docs.angularjs.org/guide/scope
+         * Try any of these solutions:
+         *   - Device service:
+         *      -- Make sure that there is actually a difference in the new data
+         *      -- Maybe implement a lazy update that waits for a second of quietness before updating
+         *   - SonosJS
+         *      -- Do not remove devices before making a info request. Maybe put a timer to remove it if it didn't respond to
+         *         the previous update request.
          *
          * */
 

@@ -5,32 +5,10 @@ define(function (require) {
         var services = require("ui/services");
         var signals = require("ui/shared/signals");
 
-        function metaData() {
-            var that = {};
-
-            that.descriptions = [];
-
-            that.setDescription = function (header, description) {
-                that.descriptions.push({
-                    header: header,
-                    description: description
-                });
-            };
-
-            that.reset = function () {
-                that.descriptions.splice(0, that.descriptions.length);
-            };
-
-            (function init() {
-                that.reset();
-            }());
-
-            return that;
-        }
-
         function currentPlayStatusController($rootScope, $scope, deviceService, mediaInfoService) {
 
-            $scope.metaData = metaData();
+            $scope.mediaArtUrl = mediaInfoService.getDefaultImageUrl();
+            $scope.descriptions = [];
 
             /**
              * Set the current media group in a scope. The scope parameter is passed in order for $apply methods to pass
@@ -47,7 +25,7 @@ define(function (require) {
                     return;
                 }
 
-                scope.metaData.reset();
+                reset(scope);
                 scope.mediaGroup = mediaGroup;
                 scope.activeDevice = deviceService.getDeviceForMediaGroup(mediaGroup);
 
@@ -58,22 +36,25 @@ define(function (require) {
 
                 console.debug("Setting active media group '%s' for device '%s'", mediaGroup.name, scope.activeDevice.id);
 
-                show("loading");
                 mediaInfoService.setActiveDevice(scope.activeDevice);
             }
 
-
-            /**
-             * Manage the state of the view area so that it properly hides information, shows loading state, etc
-             *
-             * @param {string} state    The current state of the controller
-             */
-            function show(state) {
-                if (state === "empty") {
-                    $scope.metaData.reset();
-                }
+            function setDescription(scope, header, description) {
+                scope.descriptions.push({
+                    header: header,
+                    value: description
+                });
             }
 
+            function reset(scope) {
+                scope.mediaArtUrl = mediaInfoService.getDefaultImageUrl();
+                scope.descriptions.splice(0, $scope.descriptions.length);
+            }
+
+
+            // ---------------------------------------------------------------------------------------------------------
+            // ---------------------------------------------------------------------------------------------------------
+            // CALLBACKS FOR EXTERNAL SOURCE UPDATES TO APPLY TO THE SCOPE
 
             /**
              * Callback function that will trigger when mediaInfoService has received new media info state.
@@ -82,12 +63,10 @@ define(function (require) {
                 var mediaInfo = mediaInfoService.getMediaInfo();
                 $scope.$apply(function (scope) {
                     if (mediaInfo.mediaType === "MEDIA_TYPE_MUSIC_FILE") {
-                        scope.metaData.setDescription(chrome.i18n.getMessage("musicTrack"), mediaInfo.metaData.title);
-                        scope.metaData.setDescription(chrome.i18n.getMessage("musicArtist"), mediaInfo.metaData.artist);
-                        scope.metaData.setDescription(chrome.i18n.getMessage("musicAlbum"), mediaInfo.metaData.album);
+                        setDescription(scope, chrome.i18n.getMessage("musicTrack"), mediaInfo.metaData.title);
+                        setDescription(scope, chrome.i18n.getMessage("musicArtist"), mediaInfo.metaData.artist);
+                        setDescription(scope, chrome.i18n.getMessage("musicAlbum"), mediaInfo.metaData.album);
                     }
-
-                    show("ready");
                 });
             }
 
@@ -108,11 +87,12 @@ define(function (require) {
                 }
             }
 
+            // ---------------------------------------------------------------------------------------------------------
+            // ---------------------------------------------------------------------------------------------------------
+            // INIT
 
-            /**
-             * Initiate the controller
-             */
             (function init() {
+                reset($scope);
                 var mediaGroups = deviceService.getMediaGroups() || [];
                 if (mediaGroups.length > 0) {
                     setMediaGroup($scope, mediaGroups[0]);

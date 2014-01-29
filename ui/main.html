@@ -75,9 +75,9 @@
                     <img data-ng-src="{{mediaArtUrl}}">
                 </div>
                 <div class="span8">
-                    <dl data-ng-repeat="description in metaData.descriptions">
+                    <dl data-ng-repeat="description in descriptions">
                         <dt>{{ description.header }}</dt>
-                        <dd>{{ description.description }}</dd>
+                        <dd>{{ description.value }}</dd>
                     </dl>
                 </div>
             </div>
