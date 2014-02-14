@@ -3,10 +3,17 @@ define(function (require) {
 
     var definitions = require("shared/definitions");
     var actionType = {
-        DEVICES: "sonos.devices.data",
+        DEVICES: "sonos.devices.info",
         REQUEST_DEVICES: "sonos.devices.request",
         REQUEST_MEDIA_INFO: "sonos.mediaInfo.request",
-        MEDIA_INFO: "sonos.mediaInfo.data"
+        MEDIA_INFO: "sonos.mediaInfo.info",
+        CONTROL_PLAY: "sonos.control.play.set",
+        CONTROL_PAUSE: "sonos.control.pause.set",
+        CONTROL_SEEK_FWD: "sonos.control.seek.skipForward",
+        CONTROL_SEEK_BWD: "sonos.control.seek.skipBackward",
+        CONTROL_SEEK_TIME: "sonos.control.seek.time",
+        CONTROL_VOLUME_SET: "sonos.control.volume.set",
+        CONTROL_VOLUME_INFO: "sonos.control.volume.info"
     };
 
 

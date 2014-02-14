@@ -5,10 +5,13 @@ define(function (require) {
         var services = require("ui/services");
         var signals = require("ui/shared/signals");
 
-        function currentPlayStatusController($rootScope, $scope, deviceService, mediaInfoService) {
+        function nowPlayingController($rootScope, $scope, deviceService, mediaInfoService) {
 
-            $scope.mediaArtUrl = mediaInfoService.getDefaultImageUrl();
+            var currentMediaInfoId = "";
+
+            $scope.mediaArtUrl = mediaInfoService.getDefaultMediaArtUrl();
             $scope.descriptions = [];
+            $scope.mediaGroup = null;
 
             /**
              * Set the current media group in a scope. The scope parameter is passed in order for $apply methods to pass
@@ -25,18 +28,15 @@ define(function (require) {
                     return;
                 }
 
-                reset(scope);
-                scope.mediaGroup = mediaGroup;
-                scope.activeDevice = deviceService.getDeviceForMediaGroup(mediaGroup);
-
-                if (!scope.activeDevice) {
+                var device = deviceService.getDeviceForMediaGroup(mediaGroup);
+                if (!device) {
                     console.warn("No device found for media group: %s", mediaGroup.name);
                     return;
                 }
 
-                console.debug("Setting active media group '%s' for device '%s'", mediaGroup.name, scope.activeDevice.id);
-
-                mediaInfoService.setActiveDevice(scope.activeDevice);
+                console.debug("Setting active media group '%s' for device '%s'", mediaGroup.name, device.id);
+                scope.mediaGroup = mediaGroup;
+                mediaInfoService.requestMediaInfo(device);
             }
 
             function setDescription(scope, header, description) {
@@ -47,7 +47,8 @@ define(function (require) {
             }
 
             function reset(scope) {
-                scope.mediaArtUrl = mediaInfoService.getDefaultImageUrl();
+                mediaInfoService.reset();
+                scope.mediaArtUrl = mediaInfoService.getDefaultMediaArtUrl();
                 scope.descriptions.splice(0, $scope.descriptions.length);
             }
 
@@ -61,30 +62,25 @@ define(function (require) {
              */
             function onMediaInfoUpdate() {
                 var mediaInfo = mediaInfoService.getMediaInfo();
+                if (mediaInfo.id === currentMediaInfoId) {
+                    // Abort so that there are no unnecessary refreshing of the meta data
+                    return;
+                }
+
+                currentMediaInfoId = mediaInfo.id;
+                reset($scope);
                 $scope.$apply(function (scope) {
                     if (mediaInfo.mediaType === "MEDIA_TYPE_MUSIC_FILE") {
                         setDescription(scope, chrome.i18n.getMessage("musicTrack"), mediaInfo.metaData.title);
                         setDescription(scope, chrome.i18n.getMessage("musicArtist"), mediaInfo.metaData.artist);
                         setDescription(scope, chrome.i18n.getMessage("musicAlbum"), mediaInfo.metaData.album);
                     }
-                });
-            }
-
-            /**
-             * Callback function that will trigger when deviceService has received new device information.
-             */
-            function onDevicesUpdate() {
-                var mediaGroups = deviceService.getMediaGroups();
-                var haveMediaGroup = $scope.mediaGroup ? true : false;
-                var isGroupStillPresent = haveMediaGroup && mediaGroups.some(function (mediaGroup) {
-                    return mediaGroup.name === $scope.mediaGroup.name;
-                });
-
-                if (!isGroupStillPresent) {
-                    $scope.$apply(function (scope) {
-                        setMediaGroup(scope, mediaGroups[0]);
+                    mediaInfoService.getMediaArtUrl(mediaInfo, function (url) {
+                        scope.mediaArtUrl = url;
                     });
-                }
+                });
+
+                $rootScope.$broadcast(signals.mediaArt, $scope.mediaArtUrl);
             }
 
             // ---------------------------------------------------------------------------------------------------------
@@ -92,12 +88,7 @@ define(function (require) {
             // INIT
 
             (function init() {
-                reset($scope);
-                var mediaGroups = deviceService.getMediaGroups() || [];
-                if (mediaGroups.length > 0) {
-                    setMediaGroup($scope, mediaGroups[0]);
-                }
-
+                console.debug("Initiating nowPlayingController");
                 $rootScope.$on(signals.mediaGroupSelected, function (event, mediaGroup) {
                     setMediaGroup($scope, mediaGroup);
                 });
@@ -106,15 +97,15 @@ define(function (require) {
                     $scope.mediaArtUrl = mediaArtUrl;
                 });
 
-                deviceService.onUpdate(onDevicesUpdate);
                 mediaInfoService.onUpdate(onMediaInfoUpdate);
             }());
         }
 
-        currentPlayStatusController.getId = function () {
-            return "currentPlayStatusController";
+        nowPlayingController.getId = function () {
+            return "nowPlayingController";
         };
 
-        app.controller(currentPlayStatusController.getId(), ["$rootScope", "$scope", services.deviceServiceId, services.mediaInfoService, currentPlayStatusController]);
+        var args = ["$rootScope", "$scope", services.deviceServiceId, services.mediaInfoService, nowPlayingController];
+        app.controller(nowPlayingController.getId(), args);
     }
 );

@@ -4,7 +4,6 @@ define(function (require) {
         var app = require("ui/app");
         var serviceBase = require("./base");
         var messaging = require("shared/messaging");
-        var signals = require("ui/shared/signals");
 
 
         /**
@@ -13,44 +12,22 @@ define(function (require) {
          *
          * @returns {object} Device Factory
          */
-        function mediaInfoService($http, $rootScope) {
+        function mediaInfoService($http) {
             var that = serviceBase();
 
-            var mediaInfo = {};
-            var activeDevice = {};
+            var currentMediaInfo = {};
+            var mediaArtUrl = null;
 
             var IMAGE_URL_DEFAULT = "/ui/img/default_media_art.png";
             var IMAGE_URL_LOADING = "/ui/img/loading.gif";
 
             that.getMediaInfo = function () {
-                return mediaInfo;
+                return currentMediaInfo;
             };
 
-            that.getDefaultImageUrl = function () {
+            that.getDefaultMediaArtUrl = function () {
                 return IMAGE_URL_DEFAULT;
             };
-
-            that.setActiveDevice = function (device) {
-                activeDevice = device || {};
-                messaging.sendMessage(messaging.action.REQUEST_MEDIA_INFO, activeDevice.id || "");
-            };
-
-            function onMediaInfo(mediaInfoData) {
-                mediaInfo = mediaInfoData || {};
-                console.debug("Got media info.", mediaInfoData);
-
-                var mediaArtUri = mediaInfoData.metaData.albumArtUri || null;
-                var deviceAddress = activeDevice.address;
-                if (mediaArtUri && deviceAddress) {
-                    setMediaArtUrl(IMAGE_URL_LOADING);
-                    fetchImage(["http://", deviceAddress, mediaArtUri].join(""));
-                }
-                else {
-                    setMediaArtUrl(IMAGE_URL_DEFAULT);
-                }
-
-                that.refresh();
-            }
 
             /**
              * Due to CSP restrictions in Chrome apps, it is not possible to just set img src to an external url.
@@ -59,22 +36,56 @@ define(function (require) {
              *
              *      blob:chrome-extension%3A//madmeihladfgcdchipmbnngnlpbpfppp/89d758b6-e1dd-4f85-83b2-030d0757dcbf
              *
-             * @param imageUrl
+             * The callback method should take a single argument, which is an URL to the image resource. It can be called
+             * several times since it will update the current image with loading status.
+             *
+             * @param {object}      mediaInfo  Media info object to fetch image for
+             * @param {function}    callback   Callback method that takes single string argument, which is the local URL
              */
-            function fetchImage(imageUrl) {
-                var httpRequest = $http({method: "GET", url: imageUrl, responseType: "blob"});
-                httpRequest.success(function (data) {
-                    var urlCreator = webkitURL || URL;
-                    setMediaArtUrl(urlCreator.createObjectURL(data));
-                });
-                httpRequest.error(function () {
-                    setMediaArtUrl(IMAGE_URL_DEFAULT);
-                });
+            that.getMediaArtUrl = function (mediaInfo, callback) {
+                mediaInfo = mediaInfo || {metaData: {}, device: {}};
+                var mediaArtUri = mediaInfo.metaData.albumArtUri || null;
+                var deviceAddress = mediaInfo.device.address;
+
+                if (!(mediaArtUri && deviceAddress)) {
+                    callback(IMAGE_URL_DEFAULT);
+                    return;
+                }
+                // Show loading
+                callback(IMAGE_URL_LOADING);
+
+                var remoteImageUrl = ["http://", deviceAddress, mediaArtUri].join("");
+                $http.get(remoteImageUrl, {responseType: "blob"})
+                    .success(function (data) {
+                        var urlCreator = webkitURL || URL;
+                        callback(urlCreator.createObjectURL(data));
+                    })
+                    .error(function () {
+                        callback(IMAGE_URL_DEFAULT);
+                    });
+            };
+
+
+            /**
+             * Asynchronous call for mediaInfo for a specific device
+             *
+             * @param {object}    device
+             */
+            that.requestMediaInfo = function (device) {
+                messaging.sendMessage(messaging.action.REQUEST_MEDIA_INFO, device.id || "");
+            };
+
+            that.reset = function () {
+                currentMediaInfo = {};
+                mediaArtUrl = null;
+            };
+
+            function onMediaInfo(mediaInfoData) {
+                currentMediaInfo = mediaInfoData || {};
+                console.debug("Got media info.", mediaInfoData);
+                that.refresh();
             }
 
-            function setMediaArtUrl(url) {
-                $rootScope.$broadcast(signals.mediaArt, url);
-            }
 
             /**
              * Initiate the service
@@ -91,7 +102,7 @@ define(function (require) {
             return "mediaInfoService";
         };
 
-        app.factory(mediaInfoService.getId(), ["$http", "$rootScope", mediaInfoService]);
+        app.factory(mediaInfoService.getId(), ["$http", mediaInfoService]);
 
         return mediaInfoService;
     }

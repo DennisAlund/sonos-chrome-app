@@ -4,24 +4,23 @@
     <meta charset="utf-8"/>
     <title>SONOS:APP</title>
     <link rel="stylesheet" media="all" href="/ui/css/bootstrap.dark.min.css">
-    <link rel="stylesheet" media="all" href="/lib/angular-slider/angular-slider.min.css">
+    <link rel="stylesheet" media="all" href="/lib/angular-slider/angular-slider.css">
     <!-- <base target="_blank"> -->
 </head>
 <body class="hide">
 <div class="container ng-cloak">
-    <div class="row" style="margin-top: 15px;">
+    <div class="row"  data-ng-controller="mediaControlsController" style="margin-top: 15px;">
         <div class="span3">
             <div class="row">
-                <h4>Volume</h4>
-                <!-- ng-model="device.volume" -->
-                <slider floor="0" ceiling="100" step="1" precision="1"></slider>
+                <slider floor="0" ceiling="100" step="1" precision="0" ng-model="controllers.volume"></slider>
             </div>
         </div>
         <div class="span6">
             <div class="row text-center">
-                <a class="btn  btn-large" href="#"><i class="icon-white icon-fast-backward"></i> </a>
-                <a class="btn  btn-large" href="#"><i class="icon-white icon-play"></i> </a>
-                <a class="btn  btn-large" href="#"><i class="icon-white icon-fast-forward"></i> </a>
+                <a class="btn  btn-large" href="#" data-ng-click="skipBackward()"><i class="icon-white icon-fast-backward"></i> </a>
+                <a class="btn  btn-large" href="#" data-ng-class="{hide: play === true}" data-ng-click="play = true" ><i class="icon-white icon-play"></i></a>
+                <a class="btn  btn-large" href="#" data-ng-class="{hide: play === false}" data-ng-click="play = false" ><i class="icon-white icon-pause"></i></a>
+                <a class="btn  btn-large" href="#" data-ng-click="skipForward()"><i class="icon-white icon-fast-forward"></i> </a>
             </div>
             <div class="row-fluid well" style="margin-top: 10px;">
                 <div class="span3">
@@ -67,8 +66,8 @@
                 </div>
             </div>
         </div>
-        <div class="span5" data-ng-controller="currentPlayStatusController">
-            <h3>Now playing ({{ activeDevice.room.name }})</h3>
+        <div class="span5" data-ng-controller="nowPlayingController">
+            <h3>Now playing ({{ mediaGroup.name }})</h3>
 
             <div class="row-fluid">
                 <div class="span4">

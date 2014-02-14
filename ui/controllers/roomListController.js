@@ -6,27 +6,44 @@ define(function (require) {
         var signals = require("ui/shared/signals");
 
         function roomListController($scope, deviceService) {
-            $scope.label = {
-                groupButtonText: chrome.i18n.getMessage("deviceListGroupButton")
-            };
+            $scope.mediaGroups = [];
+            $scope.currentMediaGroup = null;
 
             $scope.selectMediaGroup = function (mediaGroup) {
+                if ($scope.currentMediaGroup && $scope.currentMediaGroup.name === mediaGroup.name) {
+                    return;
+                }
                 console.debug("Selected media group: %s", mediaGroup.name);
-                $scope.$emit(signals.mediaGroupSelected, mediaGroup);
+                setMediaGroup($scope, mediaGroup);
             };
 
-            function setServiceData(scope) {
-                scope.mediaGroups = deviceService.getMediaGroups();
+            function setMediaGroup(scope, mediaGroup) {
+                scope.currentMediaGroup = mediaGroup;
+                scope.$emit(signals.mediaGroupSelected, mediaGroup);
             }
 
             function onDevicesUpdate() {
+                var mediaGroups = deviceService.getMediaGroups();
+                var haveMediaGroup = $scope.currentMediaGroup ? true : false;
+                var isGroupPresent = haveMediaGroup && mediaGroups.some(function (mediaGroup) {
+                    return mediaGroup.name === $scope.currentMediaGroup.name;
+                });
+
                 $scope.$apply(function (scope) {
-                    setServiceData(scope);
+                    scope.mediaGroups = mediaGroups;
+                    if (!isGroupPresent) {
+                        setMediaGroup(scope, mediaGroups[0]);
+                    }
                 });
             }
 
             (function init() {
-                setServiceData($scope);
+                console.debug("Initiating roomListController");
+                $scope.mediaGroups = deviceService.getMediaGroups() || [];
+                if ($scope.mediaGroups.length > 0) {
+                    setMediaGroup($scope, $scope.mediaGroups[0]);
+                }
+
                 deviceService.onUpdate(onDevicesUpdate);
             }());
         }
