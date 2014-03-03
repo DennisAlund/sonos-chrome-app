@@ -23,8 +23,7 @@ define(function (require) {
              * @param {object}  mediaGroup  The media group object
              */
             function setMediaGroup(scope, mediaGroup) {
-                mediaGroup = mediaGroup || {};
-                if (scope.mediaGroup && scope.mediaGroup.name === mediaGroup.name) {
+                if (!mediaGroup || (scope.mediaGroup && scope.mediaGroup.name === mediaGroup.name)) {
                     return;
                 }
 

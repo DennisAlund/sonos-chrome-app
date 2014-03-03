@@ -14,15 +14,21 @@
     "minimum_chrome_version": "30",
     "permissions": [
         "http://*/",
-        "storage",
-        {
-            "socket": [
-                "udp-send-to",
-                "udp-bind",
-                "udp-multicast-membership"
-            ]
-        }
+        "storage"
     ],
+    "sockets": {
+        "udp": {
+            "send": "*",
+            "bind": "0.0.0.0",
+            "multicast": "*"
+        },
+        "tcp": {
+            "connect": "*"
+        },
+        "tcpServer": {
+            "listen": "0.0.0.0"
+        }
+    },
     "icons": {
         "16": "icons/app16.png",
         "48": "icons/app48.png",

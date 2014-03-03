@@ -50,7 +50,7 @@ define(function (require) {
              */
             that.getDeviceForMediaGroup = function (mediaGroup) {
                 var devicesInGroup = devices.filter(function (device) {
-                    return device.room.name === mediaGroup.name;
+                    return device.group.name === mediaGroup.name;
                 });
 
                 return devicesInGroup.length > 0 ? devicesInGroup[0] : null;
@@ -65,9 +65,9 @@ define(function (require) {
                 mediaGroups = [];
                 deviceData.forEach(function (device) {
                     // Create a unique list of media groups (aka rooms)
-                    if (!mediaGroupMap.hasOwnProperty(device.room.name) && device.speakerSize > 0) {
-                        mediaGroups.push(device.room);
-                        mediaGroupMap[device.room.name] = true;
+                    if (!mediaGroupMap.hasOwnProperty(device.group.name) && device.speakerSize > 0) {
+                        mediaGroups.push(device.group);
+                        mediaGroupMap[device.group.name] = true;
                     }
                 });
 
