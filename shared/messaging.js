@@ -61,7 +61,7 @@ define(function (require) {
      * http://developer.chrome.com/extensions/runtime.html#method-sendMessage
      *
      * @param {string} action As defined in this module
-     * @param {any} [payload] Payload
+     * @param {object|function} [payload] Payload
      * @param {function} [callback] Callback that takes 1 argument: payload
      */
     function sendMessage(action, payload, callback) {

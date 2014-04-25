@@ -23,17 +23,17 @@ define(function (require) {
              * @param {object}  mediaGroup  The media group object
              */
             function setMediaGroup(scope, mediaGroup) {
-                if (!mediaGroup || (scope.mediaGroup && scope.mediaGroup.name === mediaGroup.name)) {
+                if (!mediaGroup || scope.mediaGroup === mediaGroup) {
                     return;
                 }
 
                 var device = deviceService.getDeviceForMediaGroup(mediaGroup);
                 if (!device) {
-                    console.warn("No device found for media group: %s", mediaGroup.name);
+                    console.warn("No device found for media group: %s", mediaGroup);
                     return;
                 }
 
-                console.debug("Setting active media group '%s' for device '%s'", mediaGroup.name, device.id);
+                console.debug("Setting active media group '%s' for device '%s'", mediaGroup, device.id);
                 scope.mediaGroup = mediaGroup;
                 mediaInfoService.requestMediaInfo(device);
             }
@@ -104,7 +104,7 @@ define(function (require) {
             return "nowPlayingController";
         };
 
-        var args = ["$rootScope", "$scope", services.deviceServiceId, services.mediaInfoService, nowPlayingController];
-        app.controller(nowPlayingController.getId(), args);
+        app.controller(nowPlayingController.getId(),
+			["$rootScope", "$scope", services.deviceServiceId, services.mediaInfoService, nowPlayingController]);
     }
 );

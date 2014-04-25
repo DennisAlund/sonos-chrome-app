@@ -8,12 +8,15 @@ define(function (require) {
         function roomListController($scope, deviceService) {
             $scope.mediaGroups = [];
             $scope.currentMediaGroup = null;
+			$scope.labels = {
+				noMediaGroups: chrome.i18n.getMessage("noMediaGroupsShort")
+			};
 
             $scope.selectMediaGroup = function (mediaGroup) {
-                if ($scope.currentMediaGroup && $scope.currentMediaGroup.name === mediaGroup.name) {
+                if ($scope.currentMediaGroup === mediaGroup) {
                     return;
                 }
-                console.debug("Selected media group: %s", mediaGroup.name);
+                console.debug("Selected media group: %s", mediaGroup);
                 setMediaGroup($scope, mediaGroup);
             };
 
@@ -26,7 +29,7 @@ define(function (require) {
                 var mediaGroups = deviceService.getMediaGroups();
                 var haveMediaGroup = $scope.currentMediaGroup ? true : false;
                 var isGroupPresent = haveMediaGroup && mediaGroups.some(function (mediaGroup) {
-                    return mediaGroup.name === $scope.currentMediaGroup.name;
+                    return mediaGroup === $scope.currentMediaGroup;
                 });
 
                 $scope.$apply(function (scope) {

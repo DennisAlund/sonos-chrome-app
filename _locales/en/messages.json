@@ -15,20 +15,24 @@
         "message": "This is an unofficial implementation of the <a href=\"http://www.sonos.com/support/\">Sonos controller</a> for Chrome. It is a <a href=\"https://github.com/dennis-alund/sonos-chrome\">free software project</a> that is not affiliated with Sonos in any way.",
         "description": "Disclaimer before using."
     },
-    "deviceListGroupButton": {
-        "message": "Group",
-        "description": "Text on the group button in the UI device list."
+    "noMediaGroupsShort": {
+        "message": "No SONOS players",
+        "description": "Short text to display when there are not SONOS devices detected."
     },
+	"searchButtonText": {
+		"message": "Search",
+		"description": "Search button"
+	},
     "musicTrack": {
         "message": "Track",
-        "description": "Music track."
+        "description": "Short label for displaying category or headline for a music track."
     },
     "musicAlbum": {
         "message": "Album",
-        "description": "Music album"
+        "description": "Short label for displaying category or headline for a music album"
     },
     "musicArtist": {
         "message": "Artist",
-        "description": "Music artist"
+        "description": "Short label for displaying category or headline for a music artist"
     }
 }

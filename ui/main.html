@@ -9,6 +9,17 @@
 </head>
 <body class="hide">
 <div class="container ng-cloak">
+    <li class="dropdown" ng-controller="roomListController">
+        <a class="dropdown-toggle">
+            Living room
+        </a>
+        <ul class="dropdown-menu">
+            <li><a>Test</a></li>
+            <li ng-click="selectMediaGroup(mediaGroup)" class="row-fluid" style="margin-top: 25px" data-ng-repeat="mediaGroup in mediaGroups">
+                <a>{{ mediaGroup }}</a>
+            </li>
+        </ul>
+    </li>
     <div class="row"  data-ng-controller="mediaControlsController" style="margin-top: 15px;">
         <div class="span3">
             <div class="row">
@@ -49,12 +60,12 @@
                     <img src="/ui/img/placeholder-100x100.gif">
                 </div>
                 <div class="span10">
-                    <p>{{ mediaGroup.name }}</p>
+                    <p>{{ mediaGroup }}</p>
                 </div>
             </div>
         </div>
         <div class="span5" data-ng-controller="nowPlayingController">
-            <h3>Now playing ({{ mediaGroup.name }})</h3>
+            <h3>Now playing ({{ mediaGroup }})</h3>
             <div class="row-fluid">
                 <div class="span4">
                     <img data-ng-src="{{mediaArtUrl}}">

@@ -1,0 +1,158 @@
+<!doctype html>
+<html ng-csp>
+<head>
+    <meta charset="utf-8">
+    <title>SONOS:APP</title>
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+
+        @media (max-width: 980px) {
+            /* Enable use of floated navbar text */
+            .navbar-text.pull-right {
+                float: none;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+
+        .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+    </style>
+    <link rel="stylesheet" media="all" href="./css/bootstrap2/bootstrap.css">
+</head>
+
+<body class="hide">
+<div class="navbar navbar-inverse navbar-fixed-top"  ng-controller="topBarController">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+            </button>
+            <a class="brand" href="#">{{ label.applicationName }}</a>
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    <li class="active">
+                        <a href="#">Now Playing</a>
+                    </li>
+                    <li>
+                        <a href>Music Library</a>
+                    </li>
+                    <li>
+                        <a href>Settings</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right pull-right">
+                    <li class="dropdown" ng-controller="roomListController">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            {{ currentMediaGroup || labels.noMediaGroups }}
+                            <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="mediaGroup in mediaGroups">
+                                <a href="#" ng-click="selectMediaGroup(mediaGroup)">{{ mediaGroup }}</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a href="#">Configure groups</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="well sidebar-nav" ng-controller="nowPlayingController">
+                <img data-ng-src="{{mediaArtUrl}}" width="100%">
+                <dl data-ng-repeat="description in descriptions">
+                    <dt>{{ description.header }}</dt>
+                    <dd>{{ description.value }}</dd>
+                </dl>
+            </div>
+        </div>
+        <div class="span9">
+            <table class="table table-striped table-condensed">
+                <thead>
+                <tr>
+                    <th>
+                        <div class="pull-right">#
+                        </div>
+                    </th>
+                    <th>Song title</th>
+                    <th>Artist</th>
+                    <th>
+                        <div class="pull-right">Duration
+                        </div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="active">
+                    <td>
+                        <div class="pull-right">1
+                        </div>
+                    </td>
+                    <td>Song number one</td>
+                    <td>The Artist</td>
+                    <td>
+                        <div class="pull-right">3:45
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="pull-right">2
+                        </div>
+                    </td>
+                    <td>Song number two</td>
+                    <td>The Artist</td>
+                    <td>
+                        <div class="pull-right">2:34
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="navbar navbar-fixed-bottom">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span3">
+                    <img style="margin-right: 30px;" src="/ui/img/placeholder-100x100.gif"
+                         width="48" height="48" class="pull-left">
+                        <b>Daft Punk</b><br>
+                        Giorgio by Moroder
+                    </div>
+                </div>
+                <div class="span9" ng-controller="mediaControlsController">
+                    <ul class="nav">
+                        <li>
+                            <a class="btn navbar-btn" href="#"><i class="icon-fast-backward"></i></a>
+                        </li>
+                        <li>
+                            <a class="btn navbar-btn" href="#" ng-hide="groupState.isPlaying" ng-click="play()"><i class="icon-play"></i></a>
+                            <a class="btn navbar-btn" href="#" ng-show="groupState.isPlaying" ng-click="pause()"><i class="icon-pause"></i></a>
+                        </li>
+                        <li>
+                            <a class="btn navbar-btn" href="#"><i class="icon-fast-forward"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script data-main="/run_ui.js" src="/lib/requirejs/require.js"></script>
+</body>
+</html>

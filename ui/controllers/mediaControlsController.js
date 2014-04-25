@@ -1,81 +1,89 @@
 define(function (require) {
-        "use strict";
+		"use strict";
 
-        var app = require("ui/app");
-        var services = require("ui/services");
-        var signals = require("ui/shared/signals");
+		var app = require("ui/app");
+		var services = require("ui/services");
+		var signals = require("ui/shared/signals");
 
-        /**
-         * Manage all the media controls, such as play, pause, etc.
-         *
-         * @param $rootScope
-         * @param $scope
-         * @param deviceService
-         */
-        function mediaControlsController($rootScope, $scope, deviceService, mediaControlsService) {
+		/**
+		 * Manage all the media controls, such as play, pause, etc.
+		 *
+		 * @param $rootScope
+		 * @param $scope
+		 * @param deviceService
+		 * @param mediaControlsService
+		 */
+		function mediaControlsController($rootScope, $scope, deviceService, mediaControlsService) {
 
-            $scope.mediaGroup = null;
-            $scope.volume = 0;
-            $scope.play = false;
+			$scope.mediaGroup = null;
 
-            $scope.skipForward = function onSkipForward() {
-                var device = deviceService.getDeviceForMediaGroup($scope.mediaGroup);
-                console.debug("Skipping music forward in '%s'", $scope.mediaGroup.name);
+			$scope.groupState = {
+				isPlaying: false
+			};
 
-                mediaControlsService.seek(device, mediaControlsService.seekOperation.skipForward);
-            };
+			$scope.toggleRepeat = function () {
 
+			};
 
-            $scope.skipBackward = function onSkipBackward() {
-                var device = deviceService.getDeviceForMediaGroup($scope.mediaGroup);
-                console.debug("Skipping music backward in '%s'", $scope.mediaGroup.name);
+			$scope.toggleShuffle = function () {
 
-                mediaControlsService.seek(device, mediaControlsService.seekOperation.skipBackward);
-            };
-
-            // ---------------------------------------------------------------------------------------------------------
-            // ---------------------------------------------------------------------------------------------------------
-            // PRIVATE
-
-            function onVolumeChange(newVolume, oldVolume) {
-                if (newVolume !== oldVolume) {
-                    var device = deviceService.getDeviceForMediaGroup($scope.mediaGroup);
-                    console.debug("Set volume to '%s' for '%s'", newVolume, $scope.mediaGroup.name);
-                    mediaControlsService.setVolume(device, newVolume);
-                }
-            }
-
-            function onPlayStateChange(newState, oldState) {
-                if (newState !== oldState) {
-                    var device = deviceService.getDeviceForMediaGroup($scope.mediaGroup);
-                    var playerState = newState ? mediaControlsService.playerState.play : mediaControlsService.playerState.pause;
-                    console.debug("Set player state to '%s' for '%s'", playerState, $scope.mediaGroup.name);
-                    mediaControlsService.setState(device, playerState);
-                }
-            }
+			};
 
 
+			$scope.play = function () {
+				setPlayState(mediaControlsService.playerState.play);
+			};
 
-            // ---------------------------------------------------------------------------------------------------------
-            // ---------------------------------------------------------------------------------------------------------
-            // INIT
+			$scope.pause = function () {
+				setPlayState(mediaControlsService.playerState.pause);
+			};
 
-            (function init() {
-                console.debug("Initiating mediaControlsController");
-                $rootScope.$on(signals.mediaGroupSelected, function (event, mediaGroup) {
-                    $scope.mediaGroup = mediaGroup;
-                });
-                $scope.$watch("volume", onVolumeChange);
-                $scope.$watch("play", onPlayStateChange);
-            }());
+			$scope.skipForward = function onSkipForward() {
+				var device = deviceService.getDeviceForMediaGroup($scope.mediaGroup);
+				console.debug("Skipping music forward in '%s'", $scope.mediaGroup);
 
-        }
+				mediaControlsService.seek(device, mediaControlsService.seekOperation.skipForward);
+			};
 
-        mediaControlsController.getId = function () {
-            return "mediaControlsController";
-        };
 
-        var args = ["$rootScope", "$scope", services.deviceServiceId, services.mediaControlsService, mediaControlsController];
-        app.controller(mediaControlsController.getId(), args);
-    }
+			$scope.skipBackward = function onSkipBackward() {
+				var device = deviceService.getDeviceForMediaGroup($scope.mediaGroup);
+				console.debug("Skipping music backward in '%s'", $scope.mediaGroup);
+
+				mediaControlsService.seek(device, mediaControlsService.seekOperation.skipBackward);
+			};
+
+
+			// ---------------------------------------------------------------------------------------------------------
+			// ---------------------------------------------------------------------------------------------------------
+			// PRIVATE METHODS
+
+			function setPlayState(playState) {
+				$scope.groupState.isPlaying = playState === mediaControlsService.playerState.play;
+				var device = deviceService.getDeviceForMediaGroup($scope.mediaGroup);
+				console.debug("Set player state to '%s' for '%s'", playState, $scope.mediaGroup);
+				mediaControlsService.setState(device, playState);
+			}
+
+
+			// ---------------------------------------------------------------------------------------------------------
+			// ---------------------------------------------------------------------------------------------------------
+			// INIT
+
+			(function init() {
+				console.debug("Initiating mediaControlsController");
+				$rootScope.$on(signals.mediaGroupSelected, function (event, mediaGroup) {
+					$scope.mediaGroup = mediaGroup;
+				});
+			}());
+
+		}
+
+		mediaControlsController.getId = function () {
+			return "mediaControlsController";
+		};
+
+		app.controller(mediaControlsController.getId(),
+			["$rootScope", "$scope", services.deviceServiceId, services.mediaControlsService, mediaControlsController]);
+	}
 );

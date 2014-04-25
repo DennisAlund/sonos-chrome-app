@@ -13,7 +13,7 @@ define(function (require) {
     // Modules can be loaded at any time and in a lazy fashion. It means that they might have missed
     // any messaging that was promoting devices at the time that they were found
     messaging.addListenerFor(messaging.action.REQUEST_DEVICES, function (callback) {
-        var devices = sonos.service.getDevices();
+        var devices = sonos.controller.getDevices();
         callback(devices);
     });
 
@@ -24,7 +24,7 @@ define(function (require) {
 
     messaging.addListenerFor(messaging.action.REQUEST_MEDIA_INFO, function (deviceId) {
         console.debug("REQUESTING MEDIA STATE FOR %s", deviceId);
-        sonos.service.requestMediaState(deviceId);
+        sonos.controller.requestMediaState(deviceId);
     });
 
     sonos.event.on(sonos.event.action.MEDIA_INFO, function (mediaData) {

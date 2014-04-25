@@ -9,7 +9,7 @@ define(function () {
 
             window: {
                 id: "app-main-window",
-                url: "/ui/main.html",
+                url: "/ui/player_ui.html",
                 size: {
                     minWidth: 1100,
                     minHeight: 700,

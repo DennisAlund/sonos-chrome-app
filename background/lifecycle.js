@@ -23,15 +23,15 @@ define(function (require) {
          */
         function onWindowClosed() {
             console.debug("App window closed.");
-            sonos.service.stop();
+            sonos.controller.stop();
 
             // Store all known devices before closing the window. This can speed up the discovery
             // if the application is completely restarted.
             var storageData = {};
             storageData[definitions.storage.deviceLocations] = [];
-            var devices = sonos.service.getDevices();
+            var devices = sonos.controller.getDevices();
             devices.forEach(function (device) {
-                var url = device.getInfoUrl();
+                var url = device.infoUrl;
                 storageData[definitions.storage.deviceLocations].push(url);
             });
 
@@ -54,11 +54,11 @@ define(function (require) {
                 console.debug("Loading known devices.", storageData);
                 var deviceLocations = storageData[definitions.storage.deviceLocations] || [];
                 deviceLocations.forEach(function (location) {
-                    sonos.service.requestDeviceDetails(location);
+                    sonos.controller.requestDeviceDetails(location);
                 });
             });
 
-            sonos.service.start();
+            sonos.controller.start();
         }
 
         /**
